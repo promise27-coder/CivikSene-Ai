@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from database.database import engine, Base, SessionLocal
 from models.complaint import Complaint
-from services.classifier import classify_complaint
+from services.classifier import classify_complaint, classify_priority
 
 app = FastAPI()
 
@@ -29,7 +29,7 @@ def create_complaint(data: dict, db: Session = Depends(get_db)):
     complaint = Complaint(
         description=description,
         category=classify_complaint(description),
-        priority="Normal",
+        priority=classify_priority(description),
         lat=data.get("lat"),
         long=data.get("long")
     )

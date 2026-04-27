@@ -95,6 +95,47 @@ PHRASE_TERMS = {
     "traffic signal": ("Traffic", 5),
 }
 
+HIGH_PRIORITY_TERMS = {
+    "accident",
+    "accidents",
+    "blast",
+    "burn",
+    "burning",
+    "collapse",
+    "collapsed",
+    "danger",
+    "dangerous",
+    "dead",
+    "death",
+    "emergency",
+    "electrocution",
+    "explosion",
+    "fire",
+    "flood",
+    "flooding",
+    "hazard",
+    "hazardous",
+    "injured",
+    "injury",
+    "shock",
+    "spark",
+    "sparking",
+    "unsafe",
+    "urgent",
+}
+
+HIGH_PRIORITY_PHRASES = {
+    "building collapse",
+    "electric shock",
+    "fallen pole",
+    "gas leak",
+    "live wire",
+    "major fire",
+    "open manhole",
+    "road accident",
+    "severe waterlogging",
+}
+
 
 def _normalize_text(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower()).strip()
@@ -125,3 +166,19 @@ def classify_complaint(description: str) -> str:
         return "General"
 
     return best_category
+
+
+def classify_priority(description: str) -> str:
+    normalized = _normalize_text(description or "")
+    if not normalized:
+        return "Normal"
+
+    for phrase in HIGH_PRIORITY_PHRASES:
+        if phrase in normalized:
+            return "High"
+
+    tokens = set(_tokenize(normalized))
+    if tokens.intersection(HIGH_PRIORITY_TERMS):
+        return "High"
+
+    return "Normal"
